@@ -1,4 +1,3 @@
-import bcrypt from 'bcrypt';
 import httpStatus from 'http-status';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
@@ -59,52 +58,6 @@ const loginUser = async (payload: TLoginUser) => {
   };
 };
 
-const changePassword = async (
-  userData: JwtPayload,
-  payload: { oldPassword: string; newPassword: string },
-) => {
-  // checking if the user is exist
-  const user = await User.isUserExistsByEmail(userData.userId);
-
-  if (!user) {
-    throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
-  }
-  // checking if the user is already deleted
-
-  // checking if the user is blocked
-
-  const userStatus = user?.isBlocked;
-
-  if (!userStatus) {
-    throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
-  }
-
-  //checking if the password is correct
-
-  if (!(await User.isPasswordMatched(payload.oldPassword, user?.password)))
-    throw new AppError(httpStatus.FORBIDDEN, 'Password do not matched');
-
-  //hash new password
-  const newHashedPassword = await bcrypt.hash(
-    payload.newPassword,
-    Number(config.bcrypt_salt_rounds),
-  );
-
-  await User.findOneAndUpdate(
-    {
-      id: userData.userId,
-      role: userData.role,
-    },
-    {
-      password: newHashedPassword,
-      needsPasswordChange: false,
-      passwordChangedAt: new Date(),
-    },
-  );
-
-  return null;
-};
-
 const refreshToken = async (token: string) => {
   // checking if the given token is valid
   const decoded = jwt.verify(
@@ -112,7 +65,7 @@ const refreshToken = async (token: string) => {
     config.jwt_refresh_secret as string,
   ) as JwtPayload;
 
-  const { userId, iat } = decoded;
+  const { userId } = decoded;
 
   // checking if the user is exist
   const user = await User.isUserExistsByEmail(userId);
@@ -129,12 +82,6 @@ const refreshToken = async (token: string) => {
     throw new AppError(httpStatus.FORBIDDEN, 'This user is blocked ! !');
   }
 
-  if (
-    user.passwordChangedAt &&
-    User.isJWTIssuedBeforePasswordChanged(user.passwordChangedAt, iat as number)
-  ) {
-    throw new AppError(httpStatus.UNAUTHORIZED, 'You are not authorized !');
-  }
 
   const jwtPayload = {
     role: user.role,
@@ -153,6 +100,5 @@ const refreshToken = async (token: string) => {
 
 export const AuthServices = {
   loginUser,
-  changePassword,
   refreshToken,
 };
