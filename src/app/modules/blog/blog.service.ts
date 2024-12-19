@@ -89,10 +89,29 @@ const deleteBlog = async (id: string, token: string) => {
   const deletedBlog = await Blog.findByIdAndDelete(id);
   return deletedBlog;
 };
+const deleteBlogByAdmin = async (id: string, token: string) => {
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+  const { role } = decoded;
+  const blog = await Blog.findById(id);
+  if (!blog) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+  if (role !== 'admin') {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'You are not authorized to delete this blog',
+    );
+  }
+  await Blog.findByIdAndDelete(id);
+};
 
 export const BlogServices = {
   getAllBlogs,
   createBlogIntoDB,
   updateBlog,
   deleteBlog,
+  deleteBlogByAdmin,
 };

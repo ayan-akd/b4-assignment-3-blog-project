@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { TErrorSources, TGenericErrorResponse } from '../interface/error';
+import httpStatus from 'http-status';
 
 const handleCastError = (
   err: mongoose.Error.CastError,
@@ -11,11 +12,11 @@ const handleCastError = (
     },
   ];
 
-  const statusCode = 400;
+  const statusCode = httpStatus.NOT_FOUND;
 
   return {
     statusCode,
-    message: 'Invalid ID',
+    message: 'Not Found',
     errorSources,
   };
 };
