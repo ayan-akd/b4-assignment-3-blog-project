@@ -4,9 +4,20 @@ import { IBlog } from './blog.interface';
 import { Blog } from './blog.model';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../../config';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { blogsSearchableFields } from './blog.constant';
 
-const getAllBlogs = async () => {
-  const blogs = await Blog.find({}).populate('author', 'name email');
+const getAllBlogs = async (query: Record<string, unknown>) => {
+  const blogQuery = new QueryBuilder(
+    Blog.find().populate('author', 'name email'),
+    query,
+  )
+    .search(blogsSearchableFields)
+    .authorFiltering()
+    .filter()
+    .sortBy()
+    .sortOrder();
+  const blogs = await blogQuery.modelQuery;
   return blogs;
 };
 
@@ -23,7 +34,10 @@ const createBlogIntoDB = async (payload: IBlog, token: string) => {
     author: userId,
   };
 
-  const newBlog = (await Blog.create(blogData)).populate('author', 'name email');
+  const newBlog = (await Blog.create(blogData)).populate(
+    'author',
+    'name email',
+  );
   if (!newBlog) {
     throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create Blog');
   }

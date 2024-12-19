@@ -10,25 +10,42 @@ class QueryBuilder<T> {
   }
 
   search(searchableFields: string[]) {
-    const searchTerm = this?.query?.searchTerm;
-    if (searchTerm) {
+    const search = this?.query?.search;
+    if (search) {
       this.modelQuery = this.modelQuery.find({
         $or: searchableFields.map(
           (field) =>
             ({
-              [field]: { $regex: searchTerm, $options: 'i' },
+              [field]: { $regex: search, $options: 'i' },
             }) as FilterQuery<T>,
         ),
       });
     }
+    return this;
+  }
 
+  authorFiltering() {
+    const author = this?.query?.filter;
+    if (author) {
+      this.modelQuery = this.modelQuery.find({
+        author: author,
+      });
+    }
     return this;
   }
 
   filter() {
     const queryObj = { ...this.query };
 
-    const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields'];
+    const excludeFields = [
+      'search',
+      'sortBy',
+      'sortOrder',
+      'limit',
+      'page',
+      'fields',
+      'filter',
+    ];
 
     excludeFields.forEach((el) => delete queryObj[el]);
 
@@ -37,28 +54,22 @@ class QueryBuilder<T> {
     return this;
   }
 
-  sort() {
-    const sort =
-      (this?.query?.sort as string)?.split(',')?.join(' ') || 'createdAt';
-    this.modelQuery = this.modelQuery.sort(sort as string);
+  sortBy() {
+    const sortBy = this.query?.sortBy as string;
+    if (sortBy) {
+      const sort = sortBy?.split(',')?.join(' ') || 'createdAt';
+      this.modelQuery = this.modelQuery.sort(sort as string);
+    }
     return this;
   }
+  sortOrder() {
+    const sortOrder = this.query?.sortOrder;
+    if (sortOrder === 'desc') {
+      this.modelQuery.sort({ createdAt: -1 });
+    } else if (sortOrder === 'asc') {
+      this.modelQuery.sort({ createdAt: 1 });
+    }
 
-  paginate() {
-    const page = Number(this?.query?.page) || 1;
-    const limit = Number(this?.query?.limit) || 10;
-    const skip = (page - 1) * limit;
-
-    this.modelQuery = this.modelQuery.skip(skip).limit(limit);
-
-    return this;
-  }
-
-  fields() {
-    const fields =
-      (this?.query?.fields as string)?.split(',')?.join(' ') || '-__v';
-
-    this.modelQuery = this.modelQuery.select(fields);
     return this;
   }
 }

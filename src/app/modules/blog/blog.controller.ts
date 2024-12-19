@@ -4,7 +4,7 @@ import httpStatus from 'http-status';
 import { BlogServices } from './blog.service';
 
 const getAllBlogs = catchAsync(async (req, res) => {
-  const result = await BlogServices.getAllBlogs();
+  const result = await BlogServices.getAllBlogs(req.query);
   const resultToSend = result.map((blog) => ({
     _id: blog._id,
     title: blog.title,
