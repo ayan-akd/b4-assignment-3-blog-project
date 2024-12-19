@@ -24,7 +24,12 @@ const test = (req: Request, res: Response) => {
   res.send(a);
 };
 
-app.get('/', test);
+app.get('/', (req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: 'server is running',
+  });
+});
 
 app.use(globalErrorHandler);
 
