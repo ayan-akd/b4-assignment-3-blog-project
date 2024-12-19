@@ -44,7 +44,34 @@ const createBlogIntoDB = async (payload: IBlog, token: string) => {
   return newBlog;
 };
 
+const updateBlog = async (
+  id: string,
+  payload: Partial<IBlog>,
+  token: string,
+) => {
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+  const { userId } = decoded;
+  const blog = await Blog.findById(id);
+  if (!blog) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+  if (blog.author.toString() !== userId) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'You are not authorized to update this blog',
+    );
+  }
+  const updatedBlog = await Blog.findByIdAndUpdate(id, payload, {
+    new: true,
+  }).populate('author', 'name email');
+  return updatedBlog;
+};
+
 export const BlogServices = {
   getAllBlogs,
   createBlogIntoDB,
+  updateBlog,
 };
