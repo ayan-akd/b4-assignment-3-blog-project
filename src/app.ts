@@ -17,7 +17,7 @@ app.use(cookieParser())
 app.use(cors({origin: ['http://localhost:5173']}));
 
 // application routes
-app.use('/api/v1', router);
+app.use('/api/', router);
 
 const test = (req: Request, res: Response) => {
   const a = 10;

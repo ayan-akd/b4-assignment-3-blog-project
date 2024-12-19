@@ -9,7 +9,7 @@ let server: Server;
 async function main() {
   try {
     await mongoose.connect(config.database_url as string, {
-      dbName: 'first-lvl2-project',
+      dbName: 'b4-assignment-3',
     });
 
     server = app.listen(config.port, () => {

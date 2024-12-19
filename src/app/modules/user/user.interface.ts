@@ -3,13 +3,12 @@ import { Model } from 'mongoose';
 import { USER_ROLE } from './user.constant';
 
 export interface TUser {
-  id: string;
+  name: string;
+  email: string;
   password: string;
-  needsPasswordChange: boolean;
   passwordChangedAt?: Date;
-  role: 'admin' | 'student' | 'faculty';
-  status: 'in-progress' | 'blocked';
-  isDeleted: boolean;
+  role: 'admin' | 'user';
+  isBlocked: boolean;
 }
 
 export interface UserModel extends Model<TUser> {

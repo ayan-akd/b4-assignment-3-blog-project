@@ -4,7 +4,11 @@ import config from '../../config';
 import { TUser, UserModel } from './user.interface';
 const userSchema = new Schema<TUser, UserModel>(
   {
-    id: {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
       type: String,
       required: true,
       unique: true,
@@ -14,23 +18,15 @@ const userSchema = new Schema<TUser, UserModel>(
       required: true,
       select: 0,
     },
-    needsPasswordChange: {
-      type: Boolean,
-      default: true,
-    },
     passwordChangedAt: {
       type: Date,
     },
     role: {
       type: String,
-      enum: ['student', 'faculty', 'admin'],
+      enum: ['admin', 'user'],
+      default: 'user',
     },
-    status: {
-      type: String,
-      enum: ['in-progress', 'blocked'],
-      default: 'in-progress',
-    },
-    isDeleted: {
+    isBlocked: {
       type: Boolean,
       default: false,
     },
