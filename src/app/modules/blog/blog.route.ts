@@ -20,5 +20,10 @@ router.patch(
   validateRequest(BlogValidation.updateBlogValidationSchema),
   BlogControllers.updateBlog,
 );
+router.delete(
+  '/:id',
+  auth(USER_ROLE.user),
+  BlogControllers.deleteBlog,
+);
 
 export const BlogRoutes = router;

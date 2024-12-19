@@ -70,8 +70,29 @@ const updateBlog = async (
   return updatedBlog;
 };
 
+const deleteBlog = async (id: string, token: string) => {
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+  const { userId } = decoded;
+  const blog = await Blog.findById(id);
+  if (!blog) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Blog not found');
+  }
+  if (blog.author.toString() !== userId) {
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      'You are not authorized to delete this blog',
+    );
+  }
+  const deletedBlog = await Blog.findByIdAndDelete(id);
+  return deletedBlog;
+};
+
 export const BlogServices = {
   getAllBlogs,
   createBlogIntoDB,
   updateBlog,
+  deleteBlog,
 };
