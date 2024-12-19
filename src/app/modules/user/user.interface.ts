@@ -1,8 +1,9 @@
 /* eslint-disable no-unused-vars */
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { USER_ROLE } from './user.constant';
 
-export interface TUser {
+export interface IUser {
+  _id: Types.ObjectId;
   name: string;
   email: string;
   password: string;
@@ -11,9 +12,9 @@ export interface TUser {
   isBlocked: boolean;
 }
 
-export interface UserModel extends Model<TUser> {
+export interface UserModel extends Model<IUser> {
   //instance methods for checking if the user exist
-  isUserExistsByCustomId(id: string): Promise<TUser>;
+  isUserExistsByEmail(email: string): Promise<IUser>;
   //instance methods for checking if passwords are matched
   isPasswordMatched(
     plainTextPassword: string,
@@ -25,4 +26,4 @@ export interface UserModel extends Model<TUser> {
   ): boolean;
 }
 
-export type TUserRole = keyof typeof USER_ROLE;
+export type IUserRole = keyof typeof USER_ROLE;
