@@ -65,9 +65,7 @@ Ensure you have the following installed:
    DEFAULT_PASS=<your_default_password>
    BCRYPT_SALT_ROUNDS=<your_bcrypt_salt_rounds>
    JWT_ACCESS_SECRET=<your_jwt_access_secret>
-   JWT_REFRESH_SECRET=<your_jwt_refresh_secret>
    JWT_ACCESS_EXPIRES_IN=<access_token_expiry_time>
-   JWT_REFRESH_EXPIRES_IN=<refresh_token_expiry_time>
    ```
 
 4. Start the development server:
