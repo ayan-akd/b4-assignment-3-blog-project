@@ -26,6 +26,7 @@ app.get('/', (req: Request, res: Response) => {
     message: 'server is running',
   });
 });
+//test
 
 app.use(globalErrorHandler);
 
