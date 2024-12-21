@@ -22,7 +22,8 @@ const createUser = catchAsync(async (req, res) => {
 
 const blockUser = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const token = req.headers.authorization;
+  let token = req.headers.authorization;
+  token = token?.includes('Bearer') ? token?.replace(/^Bearer\s+/, '') : token;
   await UserServices.blockUser(id, token as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,

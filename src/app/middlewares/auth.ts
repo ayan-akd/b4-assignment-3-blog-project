@@ -9,7 +9,9 @@ import catchAsync from '../utils/catchAsync';
 
 const auth = (...requiredRoles: IUserRole[]) => {
   return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers.authorization;
+    let token = req.headers.authorization;
+
+    token = token?.includes('Bearer') ? token?.replace(/^Bearer\s+/, '') : token;
 
     // checking if the token is missing
     if (!token) {

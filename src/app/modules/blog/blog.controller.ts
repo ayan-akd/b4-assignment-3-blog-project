@@ -20,7 +20,8 @@ const getAllBlogs = catchAsync(async (req, res) => {
 });
 
 const createBlog = catchAsync(async (req, res) => {
-  const token = req.headers.authorization;
+  let token = req.headers.authorization;
+  token = token?.includes('Bearer') ? token?.replace(/^Bearer\s+/, '') : token;
   const blogData = req.body;
   const result = await BlogServices.createBlogIntoDB(blogData, token as string);
   const resultToSend = {
@@ -40,7 +41,8 @@ const createBlog = catchAsync(async (req, res) => {
 
 const updateBlog = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const token = req.headers.authorization;
+  let token = req.headers.authorization;
+  token = token?.includes('Bearer') ? token?.replace(/^Bearer\s+/, '') : token;
   const blogData = req.body;
   const result = await BlogServices.updateBlog(id, blogData, token as string);
   const resultToSend = {
@@ -59,7 +61,8 @@ const updateBlog = catchAsync(async (req, res) => {
 
 const deleteBlog = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const token = req.headers.authorization;
+  let token = req.headers.authorization;
+  token = token?.includes('Bearer') ? token?.replace(/^Bearer\s+/, '') : token;
   await BlogServices.deleteBlog(id, token as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -70,7 +73,8 @@ const deleteBlog = catchAsync(async (req, res) => {
 
 const deleteBlogByAdmin = catchAsync(async (req, res) => {
   const id = req.params.id;
-  const token = req.headers.authorization;
+  let token = req.headers.authorization;
+  token = token?.includes('Bearer') ? token?.replace(/^Bearer\s+/, '') : token;
   await BlogServices.deleteBlogByAdmin(id, token as string);
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -84,5 +88,5 @@ export const BlogControllers = {
   createBlog,
   updateBlog,
   deleteBlog,
-  deleteBlogByAdmin
+  deleteBlogByAdmin,
 };
